@@ -1,0 +1,361 @@
+%% bsuir_stp.sty
+%% Стилевой пакет для оформления отчетов по лабораторным работам
+%% в соответствии со стандартом БГУИР СТП 01-2017 / СТП 01-2024
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{bsuir_stp}[2026/09/29 v1.0 BSUIR STP 01-2017/2024 Lab Report Style]
+
+% --- Определение движка компиляции ---
+\RequirePackage{ifxetex,ifluatex}
+\newif\ifxetexorluatex
+\ifxetex
+  \xetexorluatextrue
+\else
+  \ifluatex
+    \xetexorluatextrue
+  \else
+    \xetexorluatexfalse
+  \fi
+\fi
+
+% --- Шрифты и языковые настройки ---
+\ifxetexorluatex
+  \RequirePackage{fontspec}
+  \setmainfont{Times New Roman}
+  \setmonofont{Courier New}[Scale=0.9]
+  \RequirePackage{polyglossia}
+  \setmainlanguage{russian}
+  \setotherlanguage{english}
+\else
+  \RequirePackage[T2A]{fontenc}
+  \RequirePackage[utf8]{inputenc}
+  \RequirePackage[russian]{babel}
+  \RequirePackage{tempora}
+  \RequirePackage{courier}
+\fi
+
+% --- Геометрия страницы (СТП раздел 2.1.1, Приложение Л) ---
+% Поля: левое - 30 мм, правое - 15 мм, верхнее - 20 мм, нижнее - 20 мм.
+% Номер страницы - 10 мм от нижнего края листа.
+\RequirePackage{geometry}
+\geometry{
+  a4paper,
+  left=30mm,
+  right=15mm,
+  top=20mm,
+  bottom=20mm,
+  footskip=10mm
+}
+
+% --- Межстрочный интервал и абзацный отступ (СТП 2.1.1) ---
+% Межстрочный интервал: 1.0 (одинарный, 18 pt baselineskip для 14 pt)
+% Абзацный отступ: 1.25 см
+\RequirePackage{setspace}
+\setstretch{1.0}
+\setlength{\parindent}{1.25cm}
+\setlength{\parskip}{0pt}
+\sloppy
+
+% --- Колонтитулы и нумерация страниц (СТП 2.2.8, Приложение Л) ---
+% Нумерация в правом нижнем углу арабскими цифрами
+\RequirePackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[R]{\fontsize{14pt}{18pt}\selectfont\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Обновляем plain стиль для совместимости
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \fancyfoot[R]{\fontsize{14pt}{18pt}\selectfont\thepage}%
+  \renewcommand{\headrulewidth}{0pt}%
+  \renewcommand{\footrulewidth}{0pt}%
+}
+
+% --- Заголовки разделов и подразделов (СТП 2.1.1, 2.2.5, Приложение Л) ---
+% Заголовки разделов: прописные буквы, полужирный, выравнивание по левому краю с абзацного отступа 1.25 см, без точки в конце.
+% Каждый раздел первого уровня вложенности обязательно начинается с новой страницы (СТП).
+% Между заголовком и текстом отступ в одну пробельную строку (18 pt).
+\RequirePackage{titlesec}
+
+% Каждый раздел первого уровня начинается с новой страницы (СТП)
+\newcommand{\sectionbreak}{\clearpage}
+\ifdefined\AddToHook
+  \AddToHook{cmd/section/before}{\clearpage}
+\fi
+
+% Раздел (Section): 1 ЗАГОЛОВОК РАЗДЕЛА
+\titleformat{\section}
+  {\normalfont\fontsize{14pt}{18pt}\selectfont\bfseries}
+  {\hspace{1.25cm}\thesection}
+  {1em}
+  {\MakeUppercase}
+
+% Подраздел (Subsection): 1.1 Заголовок подраздела
+\titleformat{\subsection}
+  {\normalfont\fontsize{14pt}{18pt}\selectfont\bfseries}
+  {\hspace{1.25cm}\thesubsection}
+  {1em}
+  {}
+
+% Пункт (Subsubsection): 1.1.1 Заголовок пункта
+\titleformat{\subsubsection}
+  {\normalfont\fontsize{14pt}{18pt}\selectfont\bfseries}
+  {\hspace{1.25cm}\thesubsubsection}
+  {1em}
+  {}
+
+\titlespacing*{\section}{0pt}{18pt}{18pt}
+\titlespacing*{\subsection}{0pt}{18pt}{18pt}
+\titlespacing*{\subsubsection}{0pt}{18pt}{18pt}
+
+% Ненумерованные разделы (ВВЕДЕНИЕ, ЗАКЛЮЧЕНИЕ, ВЫВОДЫ, СОДЕРЖАНИЕ):
+% По центру страницы, без абзацного отступа, прописными буквами
+\newcommand{\anonsection}[1]{%
+  \clearpage
+  \begin{center}
+    {\normalfont\fontsize{14pt}{18pt}\selectfont\bfseries\MakeUppercase{#1}}
+  \end{center}
+  \vspace{18pt}
+  \addcontentsline{toc}{section}{#1}
+}
+
+% --- Подписи к рисункам и таблицам (СТП 2.5.5, 2.6.2) ---
+% Рисунок 1 – Название рисунка (по центру, тире, без точки)
+% Таблица 1 – Название таблицы (по левому краю, тире, без точки)
+\RequirePackage{caption}
+\DeclareCaptionLabelSeparator{stpsep}{\,--\,}
+\captionsetup{
+  labelsep=stpsep,
+  font={normalfont,normalsize},
+  figureposition=bottom,
+  tableposition=top
+}
+\captionsetup[figure]{
+  name={Рисунок},
+  justification=centering,
+  singlelinecheck=false,
+  skip=12pt
+}
+\captionsetup[table]{
+  name={Таблица},
+  justification=raggedright,
+  singlelinecheck=false,
+  skip=6pt
+}
+
+% --- Оформление списков (СТП 2.3.5, 2.3.8) ---
+\RequirePackage{enumitem}
+\setlist{
+  leftmargin=\parindent,
+  itemindent=0pt,
+  labelindent=0pt,
+  topsep=0pt,
+  partopsep=0pt,
+  parsep=0pt,
+  itemsep=0pt
+}
+\setlist[itemize,1]{label={--}}
+\setlist[enumerate,1]{label={\arabic*)}}
+\setlist[enumerate,2]{label={\alph*)}}
+
+% --- Графика и плавающие объекты ---
+\RequirePackage{graphicx}
+\RequirePackage{float}
+\RequirePackage{booktabs}
+\RequirePackage{array}
+
+% --- Математические формулы (СТП 2.4) ---
+\RequirePackage{amsmath,amssymb}
+
+% Пояснение символов формулы: "где x – описание;"
+\newenvironment{formulaexplanation}
+  {\par\noindent где\ }
+  {\par}
+
+% --- Оформление листингов кода ---
+\RequirePackage{listings}
+\RequirePackage{xcolor}
+
+\definecolor{codegreen}{rgb}{0,0.5,0}
+\definecolor{codegray}{rgb}{0.35,0.35,0.35}
+\definecolor{codepurple}{rgb}{0.5,0,0.5}
+\definecolor{codeblue}{rgb}{0.1,0.2,0.7}
+\definecolor{backcolour}{rgb}{0.98,0.98,0.98}
+
+% Настройка стилей листинга
+\lstset{
+  backgroundcolor=\color{white},
+  commentstyle=\color{black!70}\itshape,
+  keywordstyle=\bfseries,
+  numberstyle=\tiny\color{black!50},
+  stringstyle=\color{black!80},
+  basicstyle=\fontfamily{pcr}\fontsize{13pt}{15.6pt}\selectfont,
+  breakatwhitespace=false,
+  breaklines=true,
+  captionpos=t,
+  keepspaces=true,
+  numbers=none,
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  tabsize=4,
+  frame=none,
+  inputencoding=utf8,
+  extendedchars=true
+}
+
+
+% Поддержка кириллицы в комментариях листингов для pdfLaTeX
+\ifxetexorluatex
+\else
+\lstset{literate=%
+  {а}{{\selectfont\char224}}1
+  {б}{{\selectfont\char225}}1
+  {в}{{\selectfont\char226}}1
+  {г}{{\selectfont\char227}}1
+  {д}{{\selectfont\char228}}1
+  {е}{{\selectfont\char229}}1
+  {ё}{{\selectfont\char184}}1
+  {ж}{{\selectfont\char230}}1
+  {з}{{\selectfont\char231}}1
+  {и}{{\selectfont\char232}}1
+  {й}{{\selectfont\char233}}1
+  {к}{{\selectfont\char234}}1
+  {л}{{\selectfont\char235}}1
+  {м}{{\selectfont\char236}}1
+  {н}{{\selectfont\char237}}1
+  {о}{{\selectfont\char238}}1
+  {п}{{\selectfont\char239}}1
+  {р}{{\selectfont\char240}}1
+  {с}{{\selectfont\char241}}1
+  {т}{{\selectfont\char242}}1
+  {у}{{\selectfont\char243}}1
+  {ф}{{\selectfont\char244}}1
+  {х}{{\selectfont\char245}}1
+  {ц}{{\selectfont\char246}}1
+  {ч}{{\selectfont\char247}}1
+  {ш}{{\selectfont\char248}}1
+  {щ}{{\selectfont\char249}}1
+  {ъ}{{\selectfont\char250}}1
+  {ы}{{\selectfont\char251}}1
+  {ь}{{\selectfont\char252}}1
+  {э}{{\selectfont\char253}}1
+  {ю}{{\selectfont\char254}}1
+  {я}{{\selectfont\char255}}1
+  {А}{{\selectfont\char192}}1
+  {Б}{{\selectfont\char193}}1
+  {В}{{\selectfont\char194}}1
+  {Г}{{\selectfont\char195}}1
+  {Д}{{\selectfont\char196}}1
+  {Е}{{\selectfont\char197}}1
+  {Ё}{{\selectfont\char168}}1
+  {Ж}{{\selectfont\char198}}1
+  {З}{{\selectfont\char199}}1
+  {И}{{\selectfont\char200}}1
+  {Й}{{\selectfont\char201}}1
+  {К}{{\selectfont\char202}}1
+  {Л}{{\selectfont\char203}}1
+  {М}{{\selectfont\char204}}1
+  {Н}{{\selectfont\char205}}1
+  {О}{{\selectfont\char206}}1
+  {П}{{\selectfont\char207}}1
+  {Р}{{\selectfont\char208}}1
+  {С}{{\selectfont\char209}}1
+  {Т}{{\selectfont\char210}}1
+  {У}{{\selectfont\char211}}1
+  {Ф}{{\selectfont\char212}}1
+  {Х}{{\selectfont\char213}}1
+  {Ц}{{\selectfont\char214}}1
+  {Ч}{{\selectfont\char215}}1
+  {Ш}{{\selectfont\char216}}1
+  {Щ}{{\selectfont\char217}}1
+  {Ъ}{{\selectfont\char218}}1
+  {Ы}{{\selectfont\char219}}1
+  {Ь}{{\selectfont\char220}}1
+  {Э}{{\selectfont\char221}}1
+  {Ю}{{\selectfont\char222}}1
+  {Я}{{\selectfont\char223}}1
+}
+\fi
+
+% --- Переменные титульного листа ---
+\newcommand{\stpFaculty}[1]{\def\@stpFaculty{#1}}
+\newcommand{\stpDepartment}[1]{\def\@stpDepartment{#1}}
+\newcommand{\stpSubject}[1]{\def\@stpSubject{#1}}
+\newcommand{\stpLabNumber}[1]{\def\@stpLabNumber{#1}}
+\newcommand{\stpLabTopic}[1]{\def\@stpLabTopic{#1}}
+\newcommand{\stpVariant}[1]{\def\@stpVariant{#1}}
+\newcommand{\stpStudent}[1]{\def\@stpStudent{#1}}
+\newcommand{\stpGroup}[1]{\def\@stpGroup{#1}}
+\newcommand{\stpTeacher}[1]{\def\@stpTeacher{#1}}
+\newcommand{\stpTeacherRole}[1]{\def\@stpTeacherRole{#1}}
+\newcommand{\stpCity}[1]{\def\@stpCity{#1}}
+\newcommand{\stpYear}[1]{\def\@stpYear{#1}}
+
+% Значения по умолчанию
+\stpFaculty{Факультет компьютерных систем и сетей}
+\stpDepartment{Кафедра информатики}
+\stpSubject{Дисциплина}
+\stpLabNumber{1}
+\stpLabTopic{Тема лабораторной работы}
+\stpVariant{1}
+\stpStudent{Студент И.~И.}
+\stpGroup{000000}
+\stpTeacher{Преподаватель П.~П.}
+\stpTeacherRole{Преподаватель}
+\stpCity{Минск}
+\stpYear{2026}
+
+% --- Команда генерации титульного листа по стандарту БГУИР ---
+\newcommand{\makestptitlepage}{%
+  \begin{titlepage}
+    \thispagestyle{empty}
+    \begin{center}
+      {\fontsize{12pt}{14pt}\selectfont
+      МИНИСТЕРСТВО ОБРАЗОВАНИЯ РЕСПУБЛИКИ БЕЛАРУСЬ\\[6pt]
+      УЧРЕЖДЕНИЕ ОБРАЗОВАНИЯ\\[6pt]
+      «БЕЛОРУССКИЙ ГОСУДАРСТВЕННЫЙ УНИВЕРСИТЕТ ИНФОРМАТИКИ И РАДИОЭЛЕКТРОНИКИ»\\[8pt]
+      \@stpFaculty\\[4pt]
+      \@stpDepartment
+      }
+
+      \vspace{45pt}
+
+      {\fontsize{14pt}{18pt}\selectfont\bfseries
+      ОТЧЕТ\\[6pt]
+      по лабораторной работе №\,\@stpLabNumber\\[6pt]
+      по дисциплине «\@stpSubject»\\[6pt]
+      на тему: «\@stpLabTopic»\\[10pt]
+      Вариант №\,\@stpVariant
+      }
+    \end{center}
+
+    \vspace{50pt}
+
+    \begin{flushright}
+      \begin{minipage}{0.35\textwidth}
+        \raggedright
+        {\fontsize{14pt}{18pt}\selectfont
+        \textbf{Выполнил(а):}\\
+        студент(ка) гр. \@stpGroup\\
+        \@stpStudent\\[12pt]
+        \textbf{Проверил:}\\
+        \@stpTeacherRole\\
+        \@stpTeacher
+        }
+      \end{minipage}
+    \end{flushright}
+
+    \vfill
+
+    \begin{center}
+      {\fontsize{14pt}{18pt}\selectfont
+      \@stpCity\ \@stpYear
+      }
+    \end{center}
+  \end{titlepage}
+  \clearpage
+}
+
+\endinput
